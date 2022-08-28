@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
 
 import import_ipynb
 import tensorflow as tf 
@@ -13,23 +8,13 @@ import json
 import numpy as np
 
 
-# In[2]:
-
-
 with open("data.json", 'r') as f:
     datastore = json.load(f)
-
-
-# In[3]:
-
 
 training_sentences = []
 training_labels = []
 labels = []
 responses = []
-
-
-# In[4]:
 
 
 for data in datastore['data']:
@@ -41,24 +26,14 @@ for data in datastore['data']:
     if data['class'] not in labels:
         labels.append(data['class'])
 
-
-# In[5]:
-
-
 num_classes = len(labels)
 num_classes
-
-
-# In[6]:
 
 
 from sklearn.preprocessing import LabelEncoder
 encoder = LabelEncoder()
 train_labels = encoder.fit_transform(training_labels)
 train_labels
-
-
-# In[7]:
 
 
 #we define the hyperparametre:
@@ -68,47 +43,16 @@ max_length = 20
 #oov_token = "<OOV>"
 
 
-# In[12]:
-
-
 tokenizer = Tokenizer(num_words=vocab_size, oov_token="<OOF>")
 tokenizer.fit_on_texts(training_sentences)
 word_index = tokenizer.word_index
 
 
-# In[18]:
-
-
-word_index
-
-
-# In[13]:
-
-
 sequences = tokenizer.texts_to_sequences(training_sentences)
-
-
-# In[19]:
-
-
-sequences
-
-
-# In[14]:
-
 
 padded = pad_sequences(sequences,truncating='post',maxlen=max_length)
 
-
-# In[20]:
-
-
-padded
-
-
-# In[8]:
-
-
+# you can define your own model architecture :
 model = keras.Sequential([
     keras.layers.Embedding(vocab_size,embedding_dim,input_length=max_length),
     #keras.layers.Flatten(),
@@ -119,13 +63,7 @@ model = keras.Sequential([
 ])
 
 
-# In[9]:
-
-
 model.summary()
-
-
-# In[10]:
 
 
 model.compile(
@@ -135,9 +73,6 @@ model.compile(
 )
 
 
-# In[15]:
-
-
 history = model.fit(
     padded,
     train_labels,
@@ -145,13 +80,7 @@ history = model.fit(
 )
 
 
-# In[ ]:
-
-
 model5.save("chat4000_model")
-
-
-# In[21]:
 
 
 import pickle
@@ -162,9 +91,6 @@ with open('tokenizer.pickle', 'wb') as handle:
 # to save the fitted label encoder
 with open('encoder.pickle', 'wb') as ecn_file:
     pickle.dump(encoder, ecn_file, protocol=pickle.HIGHEST_PROTOCOL)
-
-
-# In[22]:
 
 
 import colorama 
@@ -207,9 +133,6 @@ print(Fore.YELLOW + "Start messaging with the bot (type quit to stop)!" + Style.
 chat()
 
 
-# In[ ]:
-
-
 filename = 'chat4000_model'
 model = tf.saved_model.load(filename)
 
@@ -223,16 +146,9 @@ Tflite_model = converter.convert()
 open("chat4000.tflite", "wb").write(Tflite_model)
 
 
-# In[ ]:
-
-
 #converter = tf.lite.TFLiteConverter.from_keras_model(model) # path to the SavedModel directory
 #tflite_model4 = converter.convert()
 #open("chatbot4.tflite","wb").write(tflite_model4)
-
-
-# In[ ]:
-
 
 
 
